@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: springboot-app
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      name: canary
+  template:
+    metadata:
+      labels:
+        name: canary
+    spec:
+      containers:
+      - name: canary-blue
+        image: adamtravis/rollouts:blue
+        ports:
+        - name: http
+          containerport: 8080
+          protocol: TCP
+       
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: canary
+  labels:
+    name: canary
+spec: 
+  ports:
+  - port: 80
+    targetport: http
+    protocol: TCP
+  selector:
+    name: canary
+  type: NodePort
